@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <span>StockPro</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-bookmark"></i>
+                    <span>Watchlist</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="theme-toggle">
+                    <button id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                        <span>Dark Mode</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Navbar -->
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search stocks by name or symbol...">
+                    </div>
+                </div>
+                <div class="navbar-right">
+                    <div class="last-updated" id="lastUpdated">
+                        <i class="fas fa-sync fa-spin"></i>
+                        <span>Updating...</span>
+                    </div>
+                    <button class="refresh-btn" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Market Summary Cards -->
+                <section class="market-summary">
+                    <div class="summary-card">
+                        <div class="summary-icon market-up">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="summary-info">
+                            <span class="summary-label">S&P 500</span>
+                            <span class="summary-value" id="sp500">Loading...</span>
+                            <span class="summary-change positive" id="sp500Change">+0.00%</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon market-down">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="summary-info">
+                            <span class="summary-label">NASDAQ</span>
+                            <span class="summary-value" id="nasdaq">Loading...</span>
+                            <span class="summary-change negative" id="nasdaqChange">-0.00%</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon market-up">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="summary-info">
+                            <span class="summary-label">DOW JONES</span>
+                            <span class="summary-value" id="dowJones">Loading...</span>
+                            <span class="summary-change positive" id="dowJonesChange">+0.00%</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon volume">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="summary-info">
+                            <span class="summary-label">Total Volume</span>
+                            <span class="summary-value" id="totalVolume">Loading...</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Stock Cards Grid -->
+                <section class="stock-cards-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-layer-group"></i> Popular Stocks</h2>
+                        <div class="section-actions">
+                            <button class="view-toggle active" data-view="grid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="view-toggle" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="stock-cards-grid" id="stockCardsGrid">
+                        <!-- Stock cards will be dynamically inserted here -->
+                    </div>
+                </section>
+
+                <!-- Chart Section -->
+                <section class="chart-section">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <h2 id="selectedStockName">Select a Stock</h2>
+                                <span class="chart-subtitle" id="selectedStockSymbol">--</span>
+                            </div>
+                            <div class="chart-controls">
+                                <select id="chartTimeframe" class="timeframe-select">
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                                <button class="chart-type-toggle active" data-type="line">
+                                    <i class="fas fa-chart-line"></i>
+                                </button>
+                                <button class="chart-type-toggle" data-type="bar">
+                                    <i class="fas fa-chart-bar"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="stockChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Stock Detail Cards -->
+                    <div class="stock-details" id="stockDetails">
+                        <div class="detail-card">
+                            <span class="detail-label">Current Price</span>
+                            <span class="detail-value" id="detailPrice">--</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-label">Open</span>
+                            <span class="detail-value" id="detailOpen">--</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-label">High</span>
+                            <span class="detail-value" id="detailHigh">--</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-label">Low</span>
+                            <span class="detail-value" id="detailLow">--</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-label">Volume</span>
+                            <span class="detail-value" id="detailVolume">--</span>
+                        </div>
+                        <div class="detail-card">
+                            <span class="detail-label">Market Cap</span>
+                            <span class="detail-value" id="detailMarketCap">--</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Table Section -->
+                <section class="table-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-table"></i> Stock Data</h2>
+                        <div class="table-filters">
+                            <select id="tableSort" class="sort-select">
+                                <option value="symbol">Sort by Symbol</option>
+                                <option value="price">Sort by Price</option>
+                                <option value="change">Sort by Change</option>
+                                <option value="volume">Sort by Volume</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="stock-table" id="stockTable">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll"></th>
+                                    <th>Symbol</th>
+                                    <th>Company Name</th>
+                                    <th>Price</th>
+                                    <th>Change</th>
+                                    <th>% Change</th>
+                                    <th>Volume</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stockTableBody">
+                                <!-- Table rows will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Watchlist Section -->
+                <section class="watchlist-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-star"></i> My Watchlist</h2>
+                        <button class="add-watchlist-btn" id="addToWatchlist">
+                            <i class="fas fa-plus"></i> Add Stock
+                        </button>
+                    </div>
+                    <div class="watchlist-grid" id="watchlistGrid">
+                        <!-- Watchlist items will be dynamically inserted here -->
+                        <div class="empty-watchlist">
+                            <i class="fas fa-star"></i>
+                            <p>No stocks in watchlist</p>
+                            <span>Click the star icon on any stock to add it here</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
